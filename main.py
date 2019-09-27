@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 app.config['DEBUG'] = True      # displays runtime errors in the browser, too
 
-@app.route('/signup', methods = ['POST'])
+@app.route('/', methods = ['POST'])
 def signup():
     username = request.form['username']
     password = request.form['password']
@@ -55,13 +55,13 @@ def signup():
             email_error = "Email is not valid"        
 
     if username_error == "" and password_error == "" and verify_error == "" and email_error == "" :
-      return render_template('welcome.html', username=username)
+      return redirect(f'/welcome?username={username}')
   
 
-    return render_template('sign-up.html', 
+    return render_template("sign-up.html", 
         username_error=username_error, password_error=password_error, 
         verify_error=verify_error,email_error=email_error, 
-        username=username, email=email)
+        username=username, email=email, title="User Sign Up")
 
 def isValid(item, name):
     if (not item) or (item.strip() == "") or (len(item) < 3) or (len(item) > 19) :
@@ -75,9 +75,15 @@ def spaceCheck(item, name):
             return "Not a valid "+ name
     return ""    
 
+
+@app.route("/welcome")
+def welcome():
+    username = request.args.get('username')
+    return render_template('welcome.html', username = username)
+
 @app.route("/")
 def index():
     encoded_error = request.args.get("error")
-    return render_template('sign-up.html', username="", email="")
+    return render_template('sign-up.html', username="", email="", title="User Sign Up")
 
 app.run()
